@@ -38,8 +38,8 @@
     <script>
         async function loadYields() {
             try {
-                // Use CORS proxy to bypass browser restrictions
-                const proxyUrl = 'https://corsproxy.io/?';
+                // Use AllOrigins CORS proxy
+                const proxyUrl = 'https://api.allorigins.win/raw?url=';
                 const apiUrl = 'https://yields.llama.fi/pools';
                 const response = await fetch(proxyUrl + encodeURIComponent(apiUrl));
                 const result = await response.json();
