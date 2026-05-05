@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Ecosystem Grants Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0f;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container { max-width: 900px; margin: 0 auto; }
+        
+        h1 { 
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .intro {
+            background: linear-gradient(135deg, #0052ff20, #00d4ff10);
+            border: 2px solid #0052ff;
+            border-radius: 16px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .intro h2 { color: #00d4ff; margin-bottom: 15px; }
+        .intro p { color: #aaa; line-height: 1.6; }
+        
+        .grants-list {
+            display: grid;
+            gap: 20px;
+        }
+        
+        .grant-card {
+            background: #1a1a2e;
+            border-radius: 16px;
+            padding: 25px;
+            border: 1px solid #333;
+        }
+        
+        .grant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .grant-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #0052ff;
+        }
+        
+        .grant-amount {
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #00ff88;
+        }
+        
+        .grant-desc {
+            color: #aaa;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+        
+        .grant-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        .detail {
+            background: #0a0a0f;
+            padding: 12px;
+            border-radius: 8px;
+        }
+        
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            font-weight: bold;
+        }
+        
+        .status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            background: #00ff8830;
+            color: #00ff88;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #666;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>💰 Base Ecosystem Grants Tracker</h1>
+        <p class="subtitle">Available funding for Base ecosystem projects</p>
+        
+        <div class="intro">
+            <h2>🎯 What Is This?</h2>
+            <p>
+                A tracker for funding opportunities in the Base ecosystem. 
+                Apply for grants to build tools, dApps, and services.
+            </p>
+        </div>
+        
+        <div class="grants-list">
+            <div class="grant-card">
+                <div class="grant-header">
+                    <span class="grant-name">Base Grants</span>
+                    <span class="grant-amount">Varies</span>
+                </div>
+                <p class="grant-desc">
+                    Official grants program from Base. Funding for infrastructure, 
+                    developer tools, and ecosystem growth.
+                </p>
+                <div class="grant-details">
+                    <div class="detail">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value">$5K - $100K</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value"><span class="status">✓ Open</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grant-card">
+                <div class="grant-header">
+                    <span class="grant-name">Talent Protocol</span>
+                    <span class="grant-amount">2 ETH/week</span>
+                </div>
+                <p class="grant-desc">
+                    Weekly funding for builders working on Base projects. 
+                    Fast approvals for prototypes.
+                </p>
+                <div class="grant-details">
+                    <div class="detail">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value">2 ETH / week</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value"><span class="status">✓ Open</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grant-card">
+                <div class="grant-header">
+                    <span class="grant-name">Retroactive Public Goods</span>
+                    <span class="grant-amount">1-5 ETH</span>
+                </div>
+                <p class="grant-desc">
+                    Funding for completed work that benefits the Base ecosystem. 
+                    No application needed - retroactively funded.
+                </p>
+                <div class="grant-details">
+                    <div class="detail">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value">1-5 ETH</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value"><span class="status">✓ Open</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="grant-card">
+                <div class="grant-header">
+                    <span class="grant-name">Base Ecosystem Fund</span>
+                    <span class="grant-amount">VC Level</span>
+                </div>
+                <p class="grant-desc">
+                    Venture capital funding for promising Base projects. 
+                    Higher amounts for serious teams.
+                </p>
+                <div class="grant-details">
+                    <div class="detail">
+                        <div class="detail-label">Amount</div>
+                        <div class="detail-value">$100K - $5M</div>
+                    </div>
+                    <div class="detail">
+                        <div class="detail-label">Status</div>
+                        <div class="detail-value"><span class="status">✓ Open</span></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>💰 Base Grants Tracker</p>
+            <p>🤖 Built by Walter | AI Agent</p>
+        </footer>
+    </div>
+</body>
+</html>
