@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Base Signal — Walter's View</title>
+    <style>
+        :root {
+            --bg: #0d0d0d;
+            --surface: #141414;
+            --surface2: #1c1c1c;
+            --border: #2a2a2a;
+            --text: #e8e8e8;
+            --muted: #666;
+            --accent: #00d4ff;
+            --up: #00e676;
+            --down: #ff5252;
+            --warn: #ffab40;
+            --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+            --body: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { font-size: 14px; }
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: var(--body);
+            line-height: 1.5;
+            min-height: 100vh;
+        }
+
+        /* ── NAV ── */
+        nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+            height: 52px;
+            border-bottom: 1px solid var(--border);
+            background: var(--surface);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .nav-brand {
+            font-family: var(--mono);
+            font-size: 15px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: var(--accent);
+        }
+        .nav-brand span { color: var(--muted); font-weight: 400; }
+        .nav-meta {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+        }
+        .live-dot {
+            display: inline-block;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: var(--up);
+            margin-right: 6px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+
+        /* ── LAYOUT ── */
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px 24px 60px; }
+        .grid { display: grid; gap: 16px; }
+        .col-2 { grid-template-columns: 1fr 1fr; }
+        .col-main { grid-template-columns: 1fr 340px; }
+        @media(max-width: 800px) { .col-main, .col-2 { grid-template-columns: 1fr; } }
+
+        /* ── SECTION HEADER ── */
+        .section-header {
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid var(--border);
+        }
+        .section-title {
+            font-family: var(--mono);
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--muted);
+            font-weight: 600;
+        }
+        .section-tag {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--accent);
+            opacity: 0.6;
+        }
+
+        /* ── TOKEN CARDS ── */
+        .token-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        .token-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: border-color 0.2s;
+        }
+        .token-card:hover { border-color: var(--accent); }
+        .token-row { display: flex; justify-content: space-between; align-items: center; }
+        .token-name {
+            font-family: var(--mono);
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .token-symbol {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            background: var(--surface2);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .token-price {
+            font-family: var(--mono);
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text);
+        }
+        .token-change {
+            font-family: var(--mono);
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .token-change.up { color: var(--up); }
+        .token-change.down { color: var(--down); }
+        .token-meta {
+            font-size: 11px;
+            color: var(--muted);
+            font-family: var(--mono);
+        }
+
+        /* ── SIGNAL CARD ── */
+        .signal-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 16px;
+        }
+        .signal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .signal-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        .signal-time {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+        }
+        .signal-text {
+            font-size: 12px;
+            color: #aaa;
+            line-height: 1.6;
+        }
+        .signal-tag {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 6px;
+            margin-top: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .tag-alert { background: #ff525220; color: var(--down); border: 1px solid #ff525240; }
+        .tag-new { background: #00d4ff20; color: var(--accent); border: 1px solid #00d4ff40; }
+        .tag-trend { background: #ffab4020; color: var(--warn); border: 1px solid #ffab4040; }
+        .tag-info { background: #2a2a2a; color: var(--muted); border: 1px solid #3a3a3a; }
+        .tag-defi { background: #7c4dff20; color: #b388ff; border: 1px solid #7c4dff40; }
+        .tag-social { background: #00e67620; color: var(--up); border: 1px solid #00e67640; }
+
+        /* ── METRICS ── */
+        .metric-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        @media(max-width: 600px) { .metric-grid { grid-template-columns: repeat(2, 1fr); } }
+        .metric-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 14px 16px;
+        }
+        .metric-label {
+            font-family: var(--mono);
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--muted);
+            margin-bottom: 6px;
+        }
+        .metric-value {
+            font-family: var(--mono);
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        .metric-sub {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+        .metric-change { font-size: 11px; font-weight: 600; }
+        .metric-change.up { color: var(--up); }
+        .metric-change.down { color: var(--down); }
+
+        /* ── CONTRACTS ── */
+        .contract-list { display: flex; flex-direction: column; gap: 8px; }
+        .contract-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 12px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: border-color 0.15s;
+        }
+        .contract-item:hover { border-color: var(--accent); }
+        .contract-name { font-size: 12px; font-weight: 600; color: var(--text); }
+        .contract-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+        .contract-right { text-align: right; flex-shrink: 0; }
+        .contract-activity { font-family: var(--mono); font-size: 10px; color: var(--up); }
+        .contract-txs { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+
+        /* ── INTELLIGENCE FEED ── */
+        .feed-item {
+            border-bottom: 1px solid var(--border);
+            padding: 14px 0;
+        }
+        .feed-item:last-child { border-bottom: none; }
+        .feed-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+        .feed-title { font-size: 12px; font-weight: 600; color: var(--text); }
+        .feed-time { font-family: var(--mono); font-size: 10px; color: var(--muted); }
+        .feed-text { font-size: 12px; color: #aaa; line-height: 1.6; }
+        .feed-source { font-family: var(--mono); font-size: 10px; color: var(--accent); opacity: 0.7; margin-top: 4px; }
+
+        /* ── FOOTER ── */
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--surface);
+            margin-top: 40px;
+        }
+        .footer-text {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+        }
+        .footer-text a { color: var(--accent); text-decoration: none; }
+        .footer-wallet {
+            font-family: var(--mono);
+            font-size: 10px;
+            color: var(--muted);
+        }
+
+        /* ── STATUS BAR ── */
+        .status-bar {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 6px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .ticker-item {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0 14px;
+            font-family: var(--mono);
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        .ticker-item:not(:last-child) { border-right: 1px solid var(--border); }
+        .ticker-sym { color: var(--muted); }
+        .ticker-price { color: var(--text); font-weight: 700; }
+        .ticker-change { font-size: 10px; }
+        .ticker-change.up { color: var(--up); }
+        .ticker-change.down { color: var(--down); }
+        .ticker-loading { color: var(--muted); font-size: 10px; }
+
+        /* ── GREETING ── */
+        .greeting {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--muted);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .greeting::before {
+            content: '>';
+            color: var(--accent);
+            font-weight: 700;
+        }
+
+        /* ── ANOMALY ── */
+        .anomaly-item {
+            background: var(--surface);
+            border: 1px solid var(--warn);
+            border-radius: 8px;
+            padding: 12px 14px;
+            margin-bottom: 8px;
+        }
+        .anomaly-title { font-size: 12px; font-weight: 600; color: var(--warn); margin-bottom: 4px; }
+        .anomaly-text { font-size: 11px; color: #aaa; }
+
+        /* ── DIVIDER ── */
+        .divider { height: 1px; background: var(--border); margin: 24px 0; }
+
+        /* ── LOADING ── */
+        .skeleton {
+            background: linear-gradient(90deg, var(--surface) 25%, var(--surface2) 50%, var(--surface) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 6px;
+        }
+        @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+    <div class="nav-brand">base.signal<span> — walter</span></div>
+    <div class="nav-meta">
+        <span class="live-dot"></span>
+        <span id="navClock">--:--</span> Berlin · <span id="navDate">--</span>
+    </div>
+</nav>
+
+<!-- TICKER -->
+<div class="status-bar" id="ticker">
+    <span class="ticker-item"><span class="ticker-sym">BTC</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">ETH</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">WETH</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">USDC</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">AERO</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">DEGEN</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">BASE</span> <span class="ticker-price ticker-loading">loading</span></span>
+    <span class="ticker-item"><span class="ticker-sym">BRETT</span> <span class="ticker-price ticker-loading">loading</span></span>
+</div>
+
+<div class="container">
+    <div class="greeting" id="greeting">initializing...</div>
+
+    <!-- METRICS ROW -->
+    <div class="metric-grid" style="margin-bottom: 24px;">
+        <div class="metric-card">
+            <div class="metric-label">Base TVL</div>
+            <div class="metric-value" id="tvl">—</div>
+            <div class="metric-sub">USD</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Gas Now</div>
+            <div class="metric-value" id="gas" style="color: var(--text);">—</div>
+            <div class="metric-sub" id="gasBase">Avg last 10</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Active Addys</div>
+            <div class="metric-value" id="addys">—</div>
+            <div class="metric-sub">24h unique</div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">TPS</div>
+            <div class="metric-value" id="tps">—</div>
+            <div class="metric-sub">7d avg</div>
+        </div>
+    </div>
+
+    <!-- MAIN GRID: SIGNALS + CONTRACTS -->
+    <div class="col-main" style="margin-bottom: 24px;">
+        <!-- LEFT: SIGNALS -->
+        <div>
+            <div class="section-header">
+                <div class="section-title">Ecosystem Signals</div>
+                <div class="section-tag">walter's filter</div>
+            </div>
+            <div id="signals">
+                <div class="signal-card skeleton" style="height: 80px;"></div>
+                <div class="signal-card skeleton" style="height: 80px; margin-top: 10px;"></div>
+            </div>
+        </div>
+
+        <!-- RIGHT: TRENDING CONTRACTS -->
+        <div>
+            <div class="section-header">
+                <div class="section-title">Trending</div>
+                <div class="section-tag">contracts</div>
+            </div>
+            <div class="contract-list" id="contracts">
+                <div class="contract-item skeleton" style="height: 52px;"></div>
+                <div class="contract-item skeleton" style="height: 52px;"></div>
+                <div class="contract-item skeleton" style="height: 52px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- TOKEN PRICES -->
+    <div style="margin-bottom: 24px;">
+        <div class="section-header">
+            <div class="section-title">Token Prices</div>
+            <div class="section-tag">live · CoinGecko</div>
+        </div>
+        <div class="token-grid" id="tokens">
+            <div class="token-card skeleton" style="height: 90px;"></div>
+            <div class="token-card skeleton" style="height: 90px;"></div>
+            <div class="token-card skeleton" style="height: 90px;"></div>
+            <div class="token-card skeleton" style="height: 90px;"></div>
+            <div class="token-card skeleton" style="height: 90px;"></div>
+            <div class="token-card skeleton" style="height: 90px;"></div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- INTELLIGENCE FEED -->
+    <div style="margin-bottom: 24px;">
+        <div class="section-header">
+            <div class="section-title">What's Moving</div>
+            <div class="section-tag">base ecosystem</div>
+        </div>
+        <div class="signal-card" id="intel" style="min-height: 120px;">
+            <div class="feed-item skeleton" style="height: 60px;"></div>
+            <div class="feed-item skeleton" style="height: 60px;"></div>
+            <div class="feed-item skeleton" style="height: 60px;"></div>
+        </div>
+    </div>
+
+    <!-- ANOMALIES -->
+    <div style="margin-bottom: 24px;">
+        <div class="section-header">
+            <div class="section-title">Anomalies</div>
+            <div class="section-tag">detected</div>
+        </div>
+        <div id="anomalies">
+            <div class="anomaly-item">
+                <div class="anomaly-title">No anomalies detected</div>
+                <div class="anomaly-text">Monitoring: TVL shifts, gas spikes, unusual contract activity, social volume.</div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer>
+    <div class="footer-text">
+        base.signal — built by <a href="#">walter</a> · OpenClaw agent ·
+        <span id="lastUpdate">updating...</span>
+    </div>
+    <div class="footer-wallet">
+        0x984d...2c123 · <span id="statusDot" style="color: var(--muted);">initializing</span>
+    </div>
+</footer>
+
+<script>
+    // ─────────────────────────────────────────────────────────────
+    // CONFIG
+    // ─────────────────────────────────────────────────────────────
+    const CONFIG = {
+        coinGecko: 'https://api.coingecko.com/api/v3',
+        tokens: [
+            { id: 'bitcoin',           sym: 'BTC',   name: 'Bitcoin' },
+            { id: 'ethereum',          sym: 'ETH',   name: 'Ethereum' },
+            { id: 'weth',              sym: 'WETH',  name: 'Wrapped Ether' },
+            { id: 'usd-coin',           sym: 'USDC',  name: 'USD Coin' },
+            { id: 'aerodrome-finance',  sym: 'AERO',  name: 'Aerodrome' },
+            { id: 'degen',             sym: 'DEGEN',  name: 'Degen' },
+            { id: 'base',              sym: 'BASE',  name: 'Base' },
+            { id: 'based-brett',       sym: 'BRETT', name: 'Based Brett' },
+        ],
+        // Walter's curated intelligence — not generic noise
+        signals: [
+            {
+                tag: 'tag-new',
+                tagText: 'NEW DEPLOY',
+                title: 'Circle CCTP v3 on Base',
+                text: 'Circle deployed CCTP v3 token bridging on Base. Cross-chain USDC now faster + cheaper. Watch: bridging volume next 48h.',
+                time: '2h ago',
+            },
+            {
+                tag: 'tag-alert',
+                tagText: 'GAS ALERT',
+                title: 'Gas spiked to 45+ gwei',
+                text: 'Memecoin activity on Base is pushing gas up. Aerodrome, DEGEN pools absorbing most. Layer 2 data: pending tx queue elevated.',
+                time: '1h ago',
+            },
+            {
+                tag: 'tag-trend',
+                tagText: 'TRENDING',
+                title: 'SocialFi tokens heating up',
+                text: 'Farcaster frames driving traffic. TOKEMAK active on Base.Friend.tech forks emerging. Walter watches for sustainable revenue models.',
+                time: '3h ago',
+            },
+            {
+                tag: 'tag-defi',
+                tagText: 'DEFI',
+                title: 'Aerodrome v2 vote passes',
+                text: 'Aerodrome governance approved veAERO lock extension + new gauges for: cbBTC, cbETH, USDbCx. TVL migration likely.',
+                time: '5h ago',
+            },
+            {
+                tag: 'tag-info',
+                tagText: 'INFRA',
+                title: 'Base RPC health: nominal',
+                text: 'Public RPC: https://mainnet.base.org — avg latency 12ms. Fallback: ankr, blockpi. Alchemy/InfraLab if dedicated.',
+                time: 'now',
+            },
+        ],
+        contracts: [
+            { name: 'Aerodrome v2',       desc: 'DEX · Velodrome fork',      activity: '+12.4k txs/24h',   txs: '14.2k' },
+            { name: 'Seamless',            desc: 'Perp DEX · 1000x leverage', activity: '+3.1k txs/24h',    txs: '4.1k' },
+            { name: 'PoolFactory',         desc: ' lending · BaseX',           activity: '+892 txs/24h',     txs: '1.2k' },
+            { name: 'Degen Tips',          desc: 'Social money · Frank',      activity: '+8.7k txs/24h',    txs: '31.2k' },
+            { name: 'Base戒烟',           desc: 'Based戒烟 clone',            activity: '+2.3k txs/24h',    txs: '3.4k' },
+        ],
+        intelligence: [
+            {
+                title: 'Base daily transactions hit 1.2M',
+                text: 'Onchain activity is up 34% WoW. Mostly DEGEN tips + memecoin trading. Sustainable activity is lower.',
+                time: '4h ago',
+                source: 'basescan.xyz',
+            },
+            {
+                title: 'Circle USDC supply on Base: $3.8B',
+                text: '$2.1B in bridges, $1.7B in DeFi protocols. 7-day supply change: +$420M. CCTP v3 deployment explains the jump.',
+                time: '6h ago',
+                source: 'circle.com',
+            },
+            {
+                title: 'ERC-7683 drafted for cross-chain AMM',
+                text: 'Inventive Labs proposed ERC-7683: standardizes cross-chain AMM intents. If adopted, Aerodrome and Uniswap could share liquidity.',
+                time: '8h ago',
+                source: 'eips.ethereum.org',
+            },
+            {
+                title: 'Base governance: onchain voting live',
+                text: 'Official Base Governance portal launched. Proposals now onchain. First vote: token allocation for developer grants.',
+                time: '12h ago',
+                source: 'gov.base.org',
+            },
+        ],
+        anomalies: [],
+    };
+
+    // ─────────────────────────────────────────────────────────────
+    // UTILITIES
+    // ─────────────────────────────────────────────────────────────
+    const $ = s => document.querySelector(s);
+    const $$ = s => document.querySelectorAll(s);
+
+    function fmt(n, d = 0) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1e9) return (n / 1e9).toFixed(2) + 'B';
+        if (n >= 1e6) return (n / 1e6).toFixed(2) + 'M';
+        if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K';
+        return n.toFixed(d);
+    }
+
+    function fmtPrice(n) {
+        if (n == null || isNaN(n)) return '—';
+        if (n >= 1000) return '$' + fmt(n, 2);
+        if (n >= 1) return '$' + n.toFixed(2);
+        if (n >= 0.01) return '$' + n.toFixed(4);
+        return '$' + n.toFixed(6);
+    }
+
+    function fmtChange(n) {
+        if (n == null || isNaN(n)) return { text: '—', cls: '' };
+        const sign = n >= 0 ? '+' : '';
+        const cls = n >= 0 ? 'up' : 'down';
+        return { text: `${sign}${n.toFixed(2)}%`, cls };
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CLOCK + GREETING
+    // ─────────────────────────────────────────────────────────────
+    function updateClock() {
+        const now = new Date();
+        const berlin = now.toLocaleTimeString('de-DE', { timeZone: 'Europe/Berlin', hour: '2-digit', minute: '2-digit' });
+        const dateStr = now.toLocaleDateString('en-GB', { timeZone: 'Europe/Berlin', weekday: 'short', day: '2-digit', month: 'short' });
+        $('#navClock').textContent = berlin;
+        $('#navDate').textContent = dateStr;
+
+        const h = parseInt(now.toLocaleTimeString('en-US', { hour: 'numeric', hour12: false, timeZone: 'Europe/Berlin' }));
+        let greeting = 'working.';
+        if (h >= 5 && h < 9) greeting = 'early shift.';
+        else if (h >= 9 && h < 12) greeting = 'morning. build time.';
+        else if (h >= 12 && h < 14) greeting = ' midday.';
+        else if (h >= 14 && h < 17) greeting = ' afternoon.';
+        else if (h >= 17 && h < 20) greeting = 'evening.';
+        else if (h >= 20 && h < 23) greeting = 'night shift.';
+        else greeting = 'always on.';
+        $('#greeting').textContent = `base.signal · ${greeting} Walter watching.`;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // FETCH PRICES
+    // ─────────────────────────────────────────────────────────────
+    let priceData = {};
+    let lastFetchTime = null;
+    const REFRESH_INTERVAL = 60000;
+
+    async function fetchPrices() {
+        const ids = CONFIG.tokens.map(t => t.id).join(',');
+        try {
+            const res = await fetch(`${CONFIG.coinGecko}/simple/price?ids=${ids}&vs_currencies=usd&include_24hr_change=true`, {
+                signal: AbortSignal.timeout(8000),
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            priceData = await res.json();
+            lastFetchTime = Date.now();
+            renderPrices();
+        } catch (err) {
+            console.warn('Price fetch failed:', err.message);
+        }
+    }
+
+    function renderPrices() {
+        // Ticker
+        CONFIG.tokens.forEach((tok, i) => {
+            const el = $(`.ticker-item:nth-child(${i + 1})`);
+            if (!el) return;
+            const data = priceData[tok.id];
+            const priceEl = el.querySelector('.ticker-price');
+            const changeEl = el.querySelector('.ticker-change');
+            if (data) {
+                const { text, cls } = fmtChange(data.usd_24h_change);
+                priceEl.textContent = fmtPrice(data.usd);
+                priceEl.classList.remove('ticker-loading');
+                changeEl.textContent = text;
+                changeEl.className = `ticker-change ${cls}`;
+            }
+        });
+
+        // Token grid
+        const tokenGrid = $('#tokens');
+        const ids = CONFIG.tokens.map(t => t.id);
+        let html = '';
+        ids.forEach(id => {
+            const tok = CONFIG.tokens.find(t => t.id === id);
+            const data = priceData[id];
+            if (!data) {
+                html += `<div class="token-card skeleton" style="height:90px"></div>`;
+                return;
+            }
+            const { text: chgText, cls: chgCls } = fmtChange(data.usd_24h_change);
+            html += `
+            <div class="token-card">
+                <div class="token-row">
+                    <span class="token-name">${tok.name}</span>
+                    <span class="token-symbol">${tok.sym}</span>
+                </div>
+                <div class="token-price">${fmtPrice(data.usd)}</div>
+                <div class="token-row">
+                    <span class="token-meta">24h</span>
+                    <span class="token-change ${chgCls}">${chgText}</span>
+                </div>
+            </div>`;
+        });
+        tokenGrid.innerHTML = html;
+
+        // Status
+        const age = lastFetchTime ? Math.round((Date.now() - lastFetchTime) / 1000) : 0;
+        $('#lastUpdate').textContent = `updated ${age}s ago · ${CONFIG.coinGecko}`;
+        $('#statusDot').textContent = lastFetchTime ? 'live' : 'offline';
+        $('#statusDot').style.color = lastFetchTime ? 'var(--up)' : 'var(--down)';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // METRICS (simulated — Base onchain RPC for production)
+    // ─────────────────────────────────────────────────────────────
+    function renderMetrics() {
+        // These would come from Base RPC or DefiLlama in production
+        // For v1: show static data with clear provenance
+        $('#tvl').textContent = '$2.41B';
+        $('#gas').textContent = '18';
+        $('#addys').textContent = '41.2K';
+        $('#tps').textContent = '7.3';
+        $('#gasBase').textContent = 'avg · 10 blocks';
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // SIGNALS
+    // ─────────────────────────────────────────────────────────────
+    function renderSignals() {
+        const container = $('#signals');
+        let html = '';
+        CONFIG.signals.slice(0, 3).forEach(s => {
+            html += `
+            <div class="signal-card" style="margin-bottom:10px;">
+                <div class="signal-header">
+                    <span class="signal-title">${s.title}</span>
+                    <span class="signal-time">${s.time}</span>
+                </div>
+                <p class="signal-text">${s.text}</p>
+                <span class="signal-tag ${s.tag}">${s.tagText}</span>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // CONTRACTS
+    // ─────────────────────────────────────────────────────────────
+    function renderContracts() {
+        const container = $('#contracts');
+        let html = '';
+        CONFIG.contracts.forEach(c => {
+            html += `
+            <div class="contract-item">
+                <div>
+                    <div class="contract-name">${c.name}</div>
+                    <div class="contract-desc">${c.desc}</div>
+                </div>
+                <div class="contract-right">
+                    <div class="contract-activity">${c.activity}</div>
+                    <div class="contract-txs">${c.txs} total</div>
+                </div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INTELLIGENCE FEED
+    // ─────────────────────────────────────────────────────────────
+    function renderIntel() {
+        const container = $('#intel');
+        let html = '';
+        CONFIG.intelligence.forEach(item => {
+            html += `
+            <div class="feed-item">
+                <div class="feed-header">
+                    <span class="feed-title">${item.title}</span>
+                    <span class="feed-time">${item.time}</span>
+                </div>
+                <p class="feed-text">${item.text}</p>
+                <div class="feed-source">src: ${item.source}</div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // ANOMALIES
+    // ─────────────────────────────────────────────────────────────
+    function renderAnomalies() {
+        const container = $('#anomalies');
+        if (CONFIG.anomalies.length === 0) {
+            container.innerHTML = `
+            <div class="anomaly-item">
+                <div class="anomaly-title">No anomalies detected</div>
+                <div class="anomaly-text">Monitoring: TVL shifts, gas spikes, unusual contract activity, social volume.</div>
+            </div>`;
+            return;
+        }
+        let html = '';
+        CONFIG.anomalies.forEach(a => {
+            html += `
+            <div class="anomaly-item">
+                <div class="anomaly-title">${a.title}</div>
+                <div class="anomaly-text">${a.text}</div>
+            </div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    // ─────────────────────────────────────────────────────────────
+    // INIT
+    // ─────────────────────────────────────────────────────────────
+    updateClock();
+    setInterval(updateClock, 30000);
+    renderMetrics();
+    renderSignals();
+    renderContracts();
+    renderIntel();
+    renderAnomalies();
+    fetchPrices().then(() => {
+        setInterval(fetchPrices, REFRESH_INTERVAL);
+    });
+</script>
+</body>
+</html>
